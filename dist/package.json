@@ -1,0 +1,17 @@
+{
+		"version": "1.0.0",
+		"author": {"name":"barandispence","email":"pass"},
+		"resources": [
+			{
+				"resourceId": "rId0",
+				"sourceType": 5,
+				"file": "resources/textSlicerAFF61942DAA945FB9517CEE2DC1699DD.pbiviz.json"
+			}
+		],
+		"visual": {"name":"textSlicer","displayName":"textSlicer","guid":"textSlicerAFF61942DAA945FB9517CEE2DC1699DD","visualClassName":"Visual","version":"1.0.0","description":"Text based slicer for PowerBI, accepts multiple inputs.","supportUrl":"pass","gitHubUrl":"barandispence/textslicerforpowerbi"},
+		"metadata": {
+			"pbivizjson": {
+				"resourceId": "rId0"
+			}
+		}
+	}

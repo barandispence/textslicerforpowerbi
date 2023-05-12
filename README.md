@@ -15,5 +15,6 @@ Custom visual for text filtering.
 ## Known Bugs
 
 - Filter works even though target column is removed from the visual.
+- New line separator not implemented yet.
 
 ![Visual](https://media1.giphy.com/media/kjMxvwhykVxD9pcAKj/giphy.gif)
