@@ -44,37 +44,86 @@ import { VisualFormattingSettingsModel } from "./settings";
 
 export class Visual implements IVisual {
     private target: HTMLElement
-    private updateCount: number
-    private textNode: Text
-    private textNode2: Text
     private slicerValue: HTMLTextAreaElement
     private slicerValueArray: string[]
     private slicerValueArrayValidated: string[] = []
     private separator: string
     private visualHost: IVisualHost
-    private dataView: DataView
     private visualUpdateOptions: VisualUpdateOptions
 
     constructor(options: VisualConstructorOptions) {
-        console.log('Visual constructor', options)
         this.target = options.element
-        this.updateCount = 0
         this.visualHost = options.host
+        this.target.style.width = '100%'
+        this.target.style.height = '100%'
         if (document) {
             this.slicerValue = document.createElement("textarea")
+            this.slicerValue.placeholder = 'Enter a value to use the slicer...'
+            this.slicerValue.style.width = '95%'
+            this.slicerValue.style.height = '95%'
+            this.slicerValue.style.border = 'none'
+            this.slicerValue.style.outline = 'none'
+            this.slicerValue.style.resize = 'none'
             this.slicerValue.addEventListener("keyup", this.slicerValueUpdate.bind(this))
             this.target.appendChild(this.slicerValue)
+
+            const separatorSelection  = document.createElement('button')
+            separatorSelection.textContent = ','
+            separatorSelection.style.position = 'fixed'
+            separatorSelection.style.bottom = '0'
+            separatorSelection.style.right = '0'
+            separatorSelection.style.zIndex = "1"
+
+            const separatorOptions = [',', ';', '|', '-', ':', ' ']
+
+            this.separator = ','
+
+            const separatorContainer = document.createElement('div')
+            separatorContainer.style.display = 'none'
+            separatorContainer.style.position = 'absolute'
+            separatorContainer.style.bottom = '30px'
+            separatorContainer.style.right = '5px'
+            separatorContainer.style.padding = '5px'
+            separatorContainer.style.backgroundColor = 'white'
+            separatorContainer.style.border = '1px solid #ccc'
+            separatorContainer.style.zIndex = '9999'
+
+            separatorOptions.forEach((separator) => {
+                const separatorOption = document.createElement('button')
+                separatorOption.textContent = separator
+                separatorOption.style.marginRight = '5px'
+                separatorOption.addEventListener('click', () => {
+                    if (this.separator != separator) {
+                        this.clearSlicer()
+                        this.separator = separator
+                        this.slicerValueUpdate()
+                    }
+                    
+                    separatorSelection.textContent = separator
+                    separatorContainer.style.display = 'none'
+                })
+                separatorContainer.appendChild(separatorOption)
+            })
+
+            separatorSelection.addEventListener('click', () => {
+                if (separatorContainer.style.display === 'none') {
+                    separatorContainer.style.display = 'block'
+                } else {
+                    separatorContainer.style.display ='none'
+                }
+            })
+
+            this.target.appendChild(separatorSelection)
+            this.target.appendChild(separatorContainer) 
         }
     }
 
-    //argüman boş geçtiği için optionsı resetliyor. bu sebeple dataview uçuyor. başka bir yöntem lazım.
     private slicerValueUpdate(): void {
         this.update(this.visualUpdateOptions as VisualUpdateOptions)
     }
 
     public update(options: VisualUpdateOptions) {
         this.visualUpdateOptions = options
-        console.log(options.dataViews[0])
         
         this.textAreaToArray()
 
@@ -112,6 +161,7 @@ export class Visual implements IVisual {
     private textAreaToArray(): void {
         if (this.slicerValue.value) {
             this.slicerValueArray = this.slicerValue.value.split(this.separator)
+            this.slicerValueArray = this.slicerValueArray.map(word => word.trim())
         } else {
             this.slicerValueArray = []
         }
@@ -119,7 +169,6 @@ export class Visual implements IVisual {
     }
 
     private sliceTime(options: VisualUpdateOptions): void {
-        this.separator = ','
         const targetColumn = this.getTargetColumn(options.dataViews[0])
         const targetTable = this.getTargetTable(options.dataViews[0])
 
